@@ -14,13 +14,23 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ *
+ */
 class AuthController extends APIV1Controller
 {
 
+    /**
+     * @param UserService $userService
+     */
     public function __construct(protected UserService $userService)
     {
     }
 
+    /**
+     * @param UserRegisterRequest $request
+     * @return JsonResponse
+     */
     public function register(UserRegisterRequest $request): JsonResponse
     {
         $data = (object)$request->validated();
@@ -51,6 +61,10 @@ class AuthController extends APIV1Controller
         ], 201);
     }
 
+    /**
+     * @param UserLoginRequest $request
+     * @return JsonResponse
+     */
     public function login(UserLoginRequest $request): JsonResponse
     {
         $data = (object)$request->validated();
@@ -76,6 +90,10 @@ class AuthController extends APIV1Controller
         ], 401);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
