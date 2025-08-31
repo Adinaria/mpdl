@@ -1,61 +1,281 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel API Project - Инструкция по установке
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> **Это тестовое задание** с Laravel API для управления пользователями и ролями
 
-## About Laravel
+## 🎯 Что включено в проект
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Laravel 12** с PHP 8.2
+- **RESTful API** для пользователей и ролей
+- **Laravel Sanctum** аутентификация  
+- **Spatie Permissions** система ролей
+- **Unit & Integration тесты** (Pest)
+- **Docker** контейнеризация
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 📋 Требования
 
-## Learning Laravel
+- **Docker** и **Docker Compose**
+- **Git**
+- Минимум **2GB RAM**
+- Минимум **5GB** свободного места
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 🚀 Быстрый старт
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1️⃣ Клонирование и подготовка
 
-## Laravel Sponsors
+```bash
+# Клонируем проект
+git clone <repository-url>
+cd mpdl
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Создаем Docker сеть (ОБЯЗАТЕЛЬНО!)
+docker network create project-network
+```
 
-### Premium Partners
+### 2️⃣ Настройка окружения
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+# Копируем конфигурацию
+cp data/project/.env.example data/project/.env
 
-## Contributing
+# Файл .env уже настроен для Docker, менять ничего не нужно!
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3️⃣ Запуск Docker контейнеров
 
-## Code of Conduct
+```bash
+# Собираем образы
+docker-compose build
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Запускаем все контейнеры
+docker-compose up -d
 
-## Security Vulnerabilities
+# Проверяем что все запустилось
+docker-compose ps
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Должны быть запущены:
+- `app_test` (PHP приложение)
+- `webserver_test` (Nginx)  
+- `db_test` (MariaDB)
+- `adminer_test` (Web DB интерфейс)
 
-## License
+### 4️⃣ Настройка Laravel
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+# Заходим в контейнер приложения
+docker exec -it app_test bash
+
+# Выполняем команды ВНУТРИ контейнера:
+composer install
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+php artisan storage:link
+
+# Настройка прав доступа
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+
+# Выходим из контейнера
+exit
+```
+
+---
+
+## ✅ Проверка работоспособности
+
+### Веб-приложение
+🌐 **http://localhost:8039**
+
+### База данных (Adminer)
+🗄️ **http://localhost:6031**
+- Сервер: `db`
+- Логин: `test`
+- Пароль: `test`
+- База: `test`
+
+### API тестирование
+📡 Используй **Postman** или **curl**:
+
+```bash
+# Регистрация пользователя
+curl -X POST http://localhost:8039/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Test",
+    "last_name": "User", 
+    "email": "test@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+  }'
+
+# Получишь токен в ответе, используй его дальше
+```
+
+---
+
+## 🧪 Запуск тестов
+
+```bash
+# Заходим в контейнер
+docker exec -it app_test bash
+
+# Все тесты
+php artisan test
+
+# Unit тесты
+php artisan test tests/Unit/
+
+# Feature тесты  
+php artisan test tests/Feature/
+
+# Pest тесты
+./vendor/bin/pest
+```
+
+---
+
+## 📚 API Documentation
+
+### 🔐 Аутентификация
+
+| Метод | URL | Описание |
+|-------|-----|----------|
+| POST | `/api/v1/auth/register` | Регистрация |
+| POST | `/api/v1/auth/login` | Вход |
+| POST | `/api/v1/auth/logout` | Выход (с токеном) |
+
+### 👥 Пользователи (требует токен)
+
+| Метод | URL | Описание |
+|-------|-----|----------|
+| GET | `/api/v1/users` | Список пользователей |
+| GET | `/api/v1/users/{uuid}` | Получить пользователя |
+| PUT | `/api/v1/users/{uuid}` | Обновить пользователя |
+
+### 🛡️ Роли (требует токен)
+
+| Метод | URL | Описание |
+|-------|-----|----------|
+| GET | `/api/v1/roles` | Список ролей |
+| GET | `/api/v1/roles/{uuid}` | Получить роль |
+| PUT | `/api/v1/roles/{uuid}` | Обновить роль |
+| DELETE | `/api/v1/roles/{uuid}` | Удалить роль |
+
+---
+
+## 🔧 Полезные команды
+
+### Docker управление
+```bash
+# Просмотр логов
+docker-compose logs -f
+
+# Остановка
+docker-compose down
+
+# Перезапуск конкретного контейнера
+docker-compose restart app
+```
+
+### Laravel команды
+```bash
+# Очистка кешей
+php artisan optimize:clear
+
+# Просмотр маршрутов
+php artisan route:list
+
+# Миграции заново
+php artisan migrate:fresh --seed
+```
+
+---
+
+## ⚠️ Возможные проблемы и решения
+
+### "network project-network not found"
+```bash
+docker network create project-network
+```
+
+### Порт 8039 занят
+Измени в `docker-compose.yml`:
+```yaml
+ports:
+  - "8040:80"  # вместо 8039:80
+```
+
+### Проблемы с правами
+```bash
+# На хосте
+sudo chown -R $USER:$USER data/project/
+
+# В контейнере
+docker exec -it app_test chown -R www-data:www-data storage
+```
+
+### Контейнер app не запускается
+```bash
+# Проверь логи
+docker-compose logs app
+
+# Пересобери образ
+docker-compose build --no-cache app
+```
+
+---
+
+## 🏗️ Архитектура проекта
+
+```
+app/
+├── Http/Controllers/API/V1/    # API контроллеры
+├── Http/Requests/API/V1/       # Валидация запросов
+├── Http/Resources/API/V1/      # API ресурсы
+├── Services/                   # Бизнес-логика
+├── DTOs/                      # Объекты передачи данных
+└── Models/                    # Eloquent модели
+
+tests/
+├── Unit/                      # Unit тесты
+└── Feature/                   # Integration тесты
+```
+
+---
+
+## 🎭 Для разработки
+
+### Включить debug режим
+```bash
+# В .env измени:
+APP_ENV=local
+APP_DEBUG=true
+
+# Очисти кеш
+php artisan config:clear
+```
+
+### Горячая перезагрузка
+Код автоматически обновляется через Docker volumes, перезапуск не нужен.
+
+---
+
+## 📝 Что реализовано
+
+✅ **JWT/Sanctum аутентификация**
+✅ **CRUD для пользователей и ролей**  
+✅ **Система разрешений (Spatie)**
+✅ **API ресурсы и валидация**
+✅ **Unit и Integration тесты**
+✅ **Docker контейнеризация**
+✅ **Кеширование сущностей**
+✅ **Repository + Service паттерны**
+
+---
+
+*Проект готов к тестированию! 🚀*
