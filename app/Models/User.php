@@ -62,12 +62,16 @@ class User extends Authenticatable
             Cache::forget(config('cache_entity.user.cache_keys.list'));
         });
         self::updated(function ($model) {
-            Cache::forget(config('cache_entity.user.list'));
-            Cache::forget(config('cache_entity.user.cache_keys.entity') . $model->uuid);
+            self::clearCacheByUser($model);
         });
         self::deleted(function ($model) {
-            Cache::forget(config('cache_entity.user.list'));
-            Cache::forget(config('cache_entity.user.cache_keys.entity') . $model->uuid);
+            self::clearCacheByUser($model);
         });
+    }
+
+    private static function clearCacheByUser(self $model): void
+    {
+        Cache::forget(config('cache_entity.user.list'));
+        Cache::forget(config('cache_entity.user.cache_keys.entity') . $model->uuid);
     }
 }

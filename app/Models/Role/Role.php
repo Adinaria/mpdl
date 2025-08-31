@@ -22,12 +22,21 @@ class Role extends SpatieRole
             Cache::forget(config('cache_entity.role.cache_keys.list'));
         });
         self::updated(function ($model) {
-            Cache::forget(config('cache_entity.role.list'));
-            Cache::forget(config('cache_entity.role.cache_keys.entity') . $model->uuid);
+            self::clearCacheByRole($model);
         });
         self::deleted(function ($model) {
-            Cache::forget(config('cache_entity.role.list'));
-            Cache::forget(config('cache_entity.role.cache_keys.entity') . $model->uuid);
+            self::clearCacheByRole($model);
         });
     }
+
+    private static function clearCacheByRole(self $model): void
+    {
+        Cache::forget(config('cache_entity.role.list'));
+        Cache::forget(config('cache_entity.role.cache_keys.entity') . $model->uuid);
+        Cache::forget(config('cache_entity.user.cache_keys.list'));
+        $model->users()->each(function ($user) {
+            Cache::forget(config('cache_entity.user.cache_keys.entity') . $user->uuid);
+        });
+    }
+
 }
