@@ -4,11 +4,11 @@ global:
 scrape_configs:
   - job_name: 'php-fpm'
     static_configs:
-      - targets: ['app_test:9253']
+      - targets: ['php-fpm-exporter:9253']
 
   - job_name: 'nginx'
     static_configs:
-      - targets: ['webserver_test:9113']
+      - targets: ['nginx-exporter:9113']
 
 remote_write:
   - url: https://prometheus-prod-24-prod-eu-west-2.grafana.net/api/prom/push
