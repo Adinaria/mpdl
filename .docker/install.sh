@@ -4,5 +4,10 @@ if [ ! -d "vendor" ]; then
   composer install --no-interaction --optimize-autoloader --no-dev
 fi
 
-RUN cp .env.example .env
-RUN var/project/php artisan key:generate
+# Копируем .env
+if [ ! -f ".env" ]; then
+    cp .env.example .env
+fi
+
+# Генерируем ключ приложения
+php artisan key:generate
