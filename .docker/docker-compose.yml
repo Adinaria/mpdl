@@ -1,0 +1,66 @@
+services:
+
+  #PHP Service
+  app:
+    build:
+        context: ../
+        dockerfile: .docker/Dockerfile
+    container_name: app_test
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/project
+    volumes:
+#      - ../:/var/project
+      - ../.docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - project-network
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: webserver_test
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8039:80"
+      - "455:444"
+    volumes:
+      - ../:/var/project
+      - ../.docker/nginx/conf.d:/etc/nginx/conf.d/
+    networks:
+      - project-network
+
+  #MySQL Service
+  db:
+    image: mariadb:10.5.18
+    container_name: db_test
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3303:3306"
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+      MYSQL_ROOT_PASSWORD: test
+    volumes:
+        - ../.docker/mysql:/var/lib/mysql/
+    networks:
+      - project-network
+
+  adminer:
+    image: adminer
+    container_name: adminer_test
+    restart: always
+    ports:
+      - "6031:8080"
+    networks:
+      - project-network
+
+networks:
+  project-network:
+    name: project-network
+#Volumes
+volumes:
+  dbdata:
+    driver: local
