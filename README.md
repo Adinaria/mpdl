@@ -26,8 +26,7 @@
 
 ```bash
 git clone https://github.com/Adinaria/mpdl.git
-cd project
-docker network create project-network
+cd mpdl
 ```
 
 ### 2️⃣ Запуск контейнеров
