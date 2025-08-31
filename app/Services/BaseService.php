@@ -58,9 +58,9 @@ abstract class BaseService
 
     /**
      * @param string $uuid
-     * @return Model
+     * @return Model|null
      */
-    public function getByUuid(string $uuid): Model
+    public function getByUuid(string $uuid): ?Model
     {
         return $this->baseRepository->getByUuid($uuid);
     }

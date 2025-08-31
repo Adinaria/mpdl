@@ -2,11 +2,11 @@
 
 namespace App\Services\Role;
 
-use App\Models\User;
 use App\Services\BaseService;
 use App\Services\Role\Repository\RoleRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Spatie\Permission\Models\Role;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 /**
  *
@@ -26,8 +26,16 @@ class RoleService extends BaseService
      */
     public function getRoles(): Collection
     {
-        // todo кеш
-        return $this->baseRepository->index()->get();
+        return Cache::remember(config('cache_entity.role.list'), now()->addDay(), function () {
+            return $this->baseRepository->index()->get();
+        });
+    }
+
+    public function getByUuid(string $uuid): ?Model
+    {
+        return Cache::remember(config('cache_entity.role.entity') . $uuid, now()->addDay(), function ($uuid) {
+            return parent::getByUuid($uuid);
+        });
     }
 
     /**
@@ -38,10 +46,9 @@ class RoleService extends BaseService
     {
         $response = literal(status: false, message: null);
 
-        $role = Role::where('uuid', $uuid)
-            ->first();
+        $role = $this->getByUuid($uuid);
 
-        if ($role && $role->users()->exists()) {
+        if (!is_null($role) && $role->users()->exists()) {
             $response->status  = false;
             $response->message = 'Cannot delete role that is assigned to users';
             return $response;

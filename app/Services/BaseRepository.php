@@ -75,9 +75,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * @param string $uuid
-     * @return Model
+     * @return null|Model
      */
-    public function getByUuid(string $uuid): Model
+    public function getByUuid(string $uuid): ?Model
     {
         return $this->index()->where('uuid', $uuid)->first();
     }

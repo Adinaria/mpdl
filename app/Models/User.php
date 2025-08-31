@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
@@ -55,6 +56,15 @@ class User extends Authenticatable
 
         self::creating(function ($model) {
             $model->uuid = Str::uuid();
+            Cache::forget(config('cache_entity.user.list'));
+        });
+        self::updating(function ($model) {
+            Cache::forget(config('cache_entity.user.list'));
+            Cache::forget(config('cache_entity.user.entity') . $model->uuid);
+        });
+        self::deleting(function ($model) {
+            Cache::forget(config('cache_entity.user.list'));
+            Cache::forget(config('cache_entity.user.entity') . $model->uuid);
         });
     }
 }

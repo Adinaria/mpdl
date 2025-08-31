@@ -35,9 +35,9 @@ interface BaseRepositoryInterface
 
     /**
      * @param string $uuid
-     * @return Model
+     * @return null|Model
      */
-    public function getByUuid(string $uuid): Model;
+    public function getByUuid(string $uuid): ?Model;
 
     /**
      * @param string $uuid
