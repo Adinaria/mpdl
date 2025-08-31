@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\YesNoEnum;
 use App\Models\Role\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -28,7 +29,7 @@ class DefaultRoleSeeder extends Seeder
     {
         // запись в бд через цикл, из-за того, что обычно роли пачками не не появляются в проекте
         foreach ($roles as $role) {
-            Role::query()->create(['name' => $role]);
+            Role::query()->create(['name' => $role, 'default_role' => YesNoEnum::Yes]);
         }
     }
 }

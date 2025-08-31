@@ -2,11 +2,13 @@
 
 namespace App\Services\Role;
 
+use App\Enums\YesNoEnum;
 use App\Services\BaseService;
 use App\Services\Role\Repository\RoleRepositoryInterface;
 use App\Traits\EntityCacheable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Response;
 
 /**
  *
@@ -35,7 +37,7 @@ class RoleService extends BaseService
             $this->canEntityCache,
             config('cache_entity.role.cache_keys.list'),
             function () {
-                return $this->baseRepository->index()->get();
+                return $this->baseRepository->index(['name', 'uuid'])->get();
             }
         );
     }
@@ -57,13 +59,23 @@ class RoleService extends BaseService
      */
     public function deleteRole(string $uuid): \StdClass
     {
-        $response = literal(status: false, message: null);
+        $response = literal(status: false, message: null, code: null);
 
         $role = $this->getByUuid($uuid);
-
-        if (!is_null($role) && $role->users()->exists()) {
+;
+        if (is_null($role)) {
+            $response->status  = false;
+            $response->message = "Role Not found";
+            $response->code    = Response::HTTP_NOT_FOUND;
+        } elseif ($role->default_role == YesNoEnum::Yes) {
+            $response->status  = false;
+            $response->message = 'Cannot delete default role';
+            $response->code    = Response::HTTP_CONFLICT;
+            return $response;
+        } elseif ($role->users()->exists()) {
             $response->status  = false;
             $response->message = 'Cannot delete role that is assigned to users';
+            $response->code    = Response::HTTP_CONFLICT;
             return $response;
         }
 

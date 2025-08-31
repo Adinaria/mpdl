@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1\Role;
 
 use App\DTOs\Role\RoleDTO;
+use App\Enums\YesNoEnum;
 use App\Http\Controllers\API\V1\APIV1Controller;
 use App\Http\Requests\API\V1\Role\RoleCreateRequest;
 use App\Http\Requests\API\V1\Role\RoleUpdateRequest;
@@ -53,11 +54,15 @@ class RoleController extends APIV1Controller
 
     /**
      * @param string $uuid
-     * @return RoleResource
+     * @return RoleResource|JsonResponse
      */
-    public function show(string $uuid): RoleResource
+    public function show(string $uuid): RoleResource|JsonResponse
     {
         $role = $this->roleService->getByUuid($uuid);
+
+        if (!$role) {
+            return response()->json(['message' => 'Role not found'], Response::HTTP_NOT_FOUND);
+        }
 
         return RoleResource::make($role);
     }
@@ -65,16 +70,23 @@ class RoleController extends APIV1Controller
     /**
      * @param RoleUpdateRequest $request
      * @param string $uuid
-     * @return RoleResource
+     * @return RoleResource|JsonResponse
      */
-    public function update(RoleUpdateRequest $request, string $uuid): RoleResource
+    public function update(RoleUpdateRequest $request, string $uuid): RoleResource|JsonResponse
     {
         $data = (object)$request->validated();
 
+        $role = $this->roleService->getByUuid($uuid);
+
+        if ($role->default_role == YesNoEnum::Yes) {
+            return response()->json([
+                'message' => 'Cannot update default role'
+            ], Response::HTTP_CONFLICT);
+        }
+
         $roleDTO       = RoleDTO::from($this->roleService->getByUuid($uuid));
         $roleDTO->name = $data->name;
-
-        $updatedRole = $this->roleService->updateByUuid($uuid, $roleDTO->toArrayForCreate());
+        $updatedRole   = $this->roleService->updateByUuid($uuid, $roleDTO->toArrayForCreate());
 
         return RoleResource::make($updatedRole)
             ->additional(['message' => 'Role updated successfully']);
@@ -89,7 +101,7 @@ class RoleController extends APIV1Controller
         $response = $this->roleService->deleteRole($uuid);
 
         if (!$response->status) {
-            return response()->json(['message' => $response->message], Response::HTTP_CONFLICT);
+            return response()->json(['message' => $response->message], $response->code);
         }
         return response()->noContent();
     }

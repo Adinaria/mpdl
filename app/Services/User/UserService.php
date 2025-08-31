@@ -73,7 +73,7 @@ class UserService extends BaseService
     public function getUsers(): Collection
     {
         return $this->caching($this->canEntityCache, config('cache_entity.user.cache_keys.list'), function () {
-            return $this->baseRepository->index()->with(['roles'])->get();
+            return $this->baseRepository->index(['id', 'uuid', 'name', 'last_name'])->with(['roles'])->get();
         });
     }
 

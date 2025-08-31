@@ -9,6 +9,8 @@ return new class () extends Migration {
     {
         Schema::table('roles', function (Blueprint $table) {
             $table->string('uuid')->index()->nullable()->default(null)->after('id');
+            $table->string('default_role')->index()->nullable()->default(null)
+                ->comment('Признак, по которому нельзя будет управлять ролью, так как она дефолтная');
             $table->softDeletes();
         });
     }
