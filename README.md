@@ -25,7 +25,7 @@
 ### 1️⃣ Подготовка
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Adinaria/mpdl.git
 cd project
 docker network create project-network
 ```
@@ -45,7 +45,7 @@ docker-compose up -d
 docker exec -it app_test bash
 
 # Ручная настройка
-composer install --no-dev --optimize-autoloader
+composer install --optimize-autoloader   # Оставляю все зависимости, так как возможно нужно будет локально запустить тесты (сборку для прода отдельную не делал)
 cp .env.example .env
 php artisan key:generate
 php artisan migrate
