@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'php-fpm'
+    static_configs:
+      - targets: ['app_test:9253']
+
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['webserver_test:9113']
+
+remote_write:
+  - url: https://prometheus-prod-24-prod-eu-west-2.grafana.net/api/prom/push
+    basic_auth:
+      username: "${GRAFANA_USER}"
+      password: "${GRAFANA_API_KEY}"
