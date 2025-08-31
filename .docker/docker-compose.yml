@@ -15,6 +15,8 @@ services:
             - project-network
         depends_on:
             - db
+        env_file:
+            - ../.env
 
     #Nginx Service
     webserver:
@@ -59,6 +61,8 @@ services:
         environment:
             GRAFANA_USER: ${GRAFANA_USER}
             GRAFANA_API_KEY: ${GRAFANA_API_KEY}
+        env_file:
+            - ../.env
         networks:
             - project-network
 
