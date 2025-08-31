@@ -97,16 +97,6 @@ ports:
   - "8040:80"  # вместо 8039:80
 ```
 
-### Проблемы с автосборкой
-Используй ручную установку:
-```bash
-cd .docker
-docker-compose build --no-cache
-docker-compose up -d
-docker exec -it app_test bash
-# далее ручные команды из раздела "Установка"
-```
-
 ### Проблемы с правами
 ```bash
 # В контейнере
