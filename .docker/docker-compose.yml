@@ -76,7 +76,7 @@ services:
         networks:
             - project-network
         depends_on:
-            - app_test
+            - app
 
     nginx-exporter:
         image: nginx/nginx-prometheus-exporter:latest
@@ -87,7 +87,7 @@ services:
         networks:
             - project-network
         depends_on:
-            - webserver_test
+            - webserver
 
     adminer:
         image: adminer
