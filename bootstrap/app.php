@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\UuidMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
+use App\Http\Middleware\ForceJsonResponseMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
         $middleware->throttleApi();
+        $middleware->append(ForceJsonResponseMiddleware::class);
         $middleware->alias([
             'uuid' => UuidMiddleware::class,
             'role' => RoleMiddleware::class,
