@@ -10,7 +10,6 @@ services:
     tty: true
     working_dir: /var/project
     volumes:
-#      - ../:/var/project
       - ../.docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - project-network
@@ -25,7 +24,7 @@ services:
       - "8039:80"
       - "455:444"
     volumes:
-      - ../:/var/project
+      - ../public:/var/public
       - ../.docker/nginx/conf.d:/etc/nginx/conf.d/
     networks:
       - project-network
