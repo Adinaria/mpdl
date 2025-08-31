@@ -8,6 +8,7 @@ use App\Http\Controllers\API\V1\APIV1Controller;
 use App\Http\Requests\API\V1\Role\RoleCreateRequest;
 use App\Http\Requests\API\V1\Role\RoleUpdateRequest;
 use App\Http\Resources\API\V1\Role\RoleResource;
+use App\Models\Role\Role;
 use App\Services\Role\RoleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -76,7 +77,14 @@ class RoleController extends APIV1Controller
     {
         $data = (object)$request->validated();
 
+        /**
+         * @var Role $role
+         */
         $role = $this->roleService->getByUuid($uuid);
+
+        if (!$role) {
+            return response()->json(['message' => 'Role not found'], Response::HTTP_NOT_FOUND);
+        }
 
         if ($role->default_role == YesNoEnum::Yes) {
             return response()->json([

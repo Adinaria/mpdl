@@ -60,11 +60,14 @@ class UserController extends APIV1Controller
 
     /**
      * @param string $uuid
-     * @return UserResource
+     * @return UserResource|JsonResponse
      */
-    public function show(string $uuid): UserResource
+    public function show(string $uuid): UserResource|JsonResponse
     {
         $user = $this->userService->getUserWithRoles($uuid);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
 
         return UserResource::make($user);
     }
@@ -72,11 +75,16 @@ class UserController extends APIV1Controller
     /**
      * @param UserUpdateRequest $request
      * @param string $uuid
-     * @return UserResource
+     * @return UserResource|JsonResponse
      */
-    public function updatePut(UserUpdateRequest $request, string $uuid): UserResource
+    public function updatePut(UserUpdateRequest $request, string $uuid): UserResource|JsonResponse
     {
         $data = (object)$request->validated();
+
+        $user = $this->userService->getByUuid($uuid);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
 
         $userDTO = new UserDTO(
             uuid     : $uuid,
@@ -94,22 +102,27 @@ class UserController extends APIV1Controller
     /**
      * @param UserUpdateRequest $request
      * @param string $uuid
-     * @return UserResource
+     * @return UserResource|JsonResponse
      */
-    public function updatePatch(UserUpdateRequest $request, string $uuid): UserResource
+    public function updatePatch(UserUpdateRequest $request, string $uuid): UserResource|JsonResponse
     {
         $data = (object)$request->validated();
         /**
          * @var User $user
          */
-        $user  = $this->userService->getUserWithRoles($uuid);
+        $user = $this->userService->getUserWithRoles($uuid);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
 
         $roles = isset($data->roles) ? $data->roles : $user->getRoleNames();
 
         $userDTO = UserDTO::from($user);
         // подстановка только тех полей, которые пришли в реквест
         foreach ($data as $key => $value) {
-            if ($key === 'roles') continue;
+            if ($key === 'roles') {
+                continue;
+            }
             if (property_exists($userDTO, $key)) {
                 $userDTO->$key = $value;
             }
@@ -123,11 +136,17 @@ class UserController extends APIV1Controller
 
     /**
      * @param string $uuid
-     * @return Response
+     * @return Response|JsonResponse
      */
-    public function destroy(string $uuid): Response
+    public function destroy(string $uuid): Response|JsonResponse
     {
-        $this->userService->deleteByUuid($uuid);
+        $user = $this->userService->getByUuid($uuid);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $user->delete();
 
         return response()->noContent();
     }
