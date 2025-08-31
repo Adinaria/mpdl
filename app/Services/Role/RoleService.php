@@ -61,12 +61,12 @@ class RoleService extends BaseService
     {
         $response = literal(status: false, message: null, code: null);
 
-        $role = $this->getByUuid($uuid);
-;
+        $role = $this->getByUuid($uuid);;
         if (is_null($role)) {
             $response->status  = false;
             $response->message = "Role Not found";
             $response->code    = Response::HTTP_NOT_FOUND;
+            return $response;
         } elseif ($role->default_role == YesNoEnum::Yes) {
             $response->status  = false;
             $response->message = 'Cannot delete default role';

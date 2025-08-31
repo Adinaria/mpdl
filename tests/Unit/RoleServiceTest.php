@@ -5,8 +5,8 @@ use App\Services\Role\Repository\RoleRepositoryInterface;
 use App\Enums\YesNoEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\Response;
-use Mockery;
 
 describe('RoleService', function () {
     beforeEach(function () {
@@ -22,13 +22,13 @@ describe('RoleService', function () {
             (object)['name' => 'user', 'uuid' => 'uuid-2']
         ]);
 
-        $mockQuery = Mockery::mock();
-        $mockQuery->shouldReceive('get')->once()->andReturn($roles);
+        $builder = Mockery::mock(\Illuminate\Database\Eloquent\Builder::class);
+        $builder->shouldReceive('get')->once()->andReturn($roles);
 
         $this->mockRepository->shouldReceive('index')
             ->once()
             ->with(['name', 'uuid'])
-            ->andReturn($mockQuery);
+            ->andReturn($builder);
 
         $result = $this->roleService->getRoles();
 
@@ -37,7 +37,7 @@ describe('RoleService', function () {
 
     test('getByUuid returns role when found', function () {
         $uuid     = 'test-uuid-123';
-        $mockRole = Mockery::mock(Model::class);
+        $mockRole = Mockery::mock(\App\Models\Role\Role::class);
 
         $this->mockRepository->shouldReceive('getByUuid')
             ->once()
@@ -57,16 +57,19 @@ describe('RoleService', function () {
             ->with($uuid)
             ->andReturn(null);
 
+        $this->mockRepository->shouldReceive('deleteByUuid')
+            ->never();
+
         $result = $this->roleService->deleteRole($uuid);
 
-        expect($result->status)->toBeFalse();
-        expect($result->message)->toBe('Role Not found');
-        expect($result->code)->toBe(Response::HTTP_NOT_FOUND);
+        expect($result->status)->toBeFalse()
+            ->and($result->message)->toBe('Role Not found')
+            ->and($result->code)->toBe(Response::HTTP_NOT_FOUND);
     });
 
     test('deleteRole prevents deletion of default role', function () {
         $uuid                   = 'default-role-uuid';
-        $mockRole               = Mockery::mock(Model::class);
+        $mockRole               = Mockery::mock(\App\Models\Role\Role::class)->makePartial();
         $mockRole->default_role = YesNoEnum::Yes;
 
         $this->mockRepository->shouldReceive('getByUuid')
@@ -74,19 +77,23 @@ describe('RoleService', function () {
             ->with($uuid)
             ->andReturn($mockRole);
 
+        $this->mockRepository->shouldReceive('deleteRole')
+            ->with($uuid)
+            ->never();
+
         $result = $this->roleService->deleteRole($uuid);
 
-        expect($result->status)->toBeFalse();
-        expect($result->message)->toBe('Cannot delete default role');
-        expect($result->code)->toBe(Response::HTTP_CONFLICT);
+        expect($result->status)->toBeFalse()
+            ->and($result->message)->toBe('Cannot delete default role')
+            ->and($result->code)->toBe(Response::HTTP_CONFLICT);
     });
 
     test('deleteRole prevents deletion of role assigned to users', function () {
         $uuid                   = 'assigned-role-uuid';
-        $mockRole               = Mockery::mock(Model::class);
+        $mockRole               = Mockery::mock(\App\Models\Role\Role::class)->makePartial();
         $mockRole->default_role = YesNoEnum::No;
 
-        $mockUsers = Mockery::mock();
+        $mockUsers = Mockery::mock(BelongsToMany::class)->makePartial();
         $mockUsers->shouldReceive('exists')->once()->andReturn(true);
         $mockRole->shouldReceive('users')->once()->andReturn($mockUsers);
 
@@ -95,19 +102,20 @@ describe('RoleService', function () {
             ->with($uuid)
             ->andReturn($mockRole);
 
+        $this->mockRepository->shouldReceive('deleteRole')->with($uuid)->never();
         $result = $this->roleService->deleteRole($uuid);
 
-        expect($result->status)->toBeFalse();
-        expect($result->message)->toBe('Cannot delete role that is assigned to users');
-        expect($result->code)->toBe(Response::HTTP_CONFLICT);
+        expect($result->status)->toBeFalse()
+            ->and($result->message)->toBe('Cannot delete role that is assigned to users')
+            ->and($result->code)->toBe(Response::HTTP_CONFLICT);
     });
 
     test('deleteRole successfully deletes eligible role', function () {
         $uuid                   = 'deletable-role-uuid';
-        $mockRole               = Mockery::mock(Model::class);
+        $mockRole               = Mockery::mock(\App\Models\Role\Role::class)->makePartial();
         $mockRole->default_role = YesNoEnum::No;
 
-        $mockUsers = Mockery::mock();
+        $mockUsers = Mockery::mock(BelongsToMany::class)->makePartial();
         $mockUsers->shouldReceive('exists')->once()->andReturn(false);
         $mockRole->shouldReceive('users')->once()->andReturn($mockUsers);
 
@@ -123,15 +131,15 @@ describe('RoleService', function () {
 
         $result = $this->roleService->deleteRole($uuid);
 
-        expect($result->status)->toBeTrue();
+        expect($result->status)->toBeTrue()->and($result->message)->toBeNull()->and($result->code)->toBeNull();
     });
 
     test('deleteRole returns false when deletion fails', function () {
         $uuid                   = 'fail-delete-uuid';
-        $mockRole               = Mockery::mock(Model::class);
+        $mockRole               = Mockery::mock(\App\Models\Role\Role::class)->makePartial();
         $mockRole->default_role = YesNoEnum::No;
 
-        $mockUsers = Mockery::mock();
+        $mockUsers = Mockery::mock(BelongsToMany::class);
         $mockUsers->shouldReceive('exists')->once()->andReturn(false);
         $mockRole->shouldReceive('users')->once()->andReturn($mockUsers);
 
@@ -147,7 +155,7 @@ describe('RoleService', function () {
 
         $result = $this->roleService->deleteRole($uuid);
 
-        expect($result->status)->toBeFalse();
+        expect($result->status)->toBeFalse()->and($result->message)->toBeNull()->and($result->code)->toBeNull();
     });
 
     afterEach(function () {
