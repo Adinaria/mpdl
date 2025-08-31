@@ -56,15 +56,18 @@ class User extends Authenticatable
 
         self::creating(function ($model) {
             $model->uuid = Str::uuid();
-            Cache::forget(config('cache_entity.user.list'));
+            Cache::forget(config('cache_entity.user.cache_keys.list'));
         });
-        self::updating(function ($model) {
-            Cache::forget(config('cache_entity.user.list'));
-            Cache::forget(config('cache_entity.user.entity') . $model->uuid);
+        self::created(function () {
+            Cache::forget(config('cache_entity.user.cache_keys.list'));
         });
-        self::deleting(function ($model) {
+        self::updated(function ($model) {
             Cache::forget(config('cache_entity.user.list'));
-            Cache::forget(config('cache_entity.user.entity') . $model->uuid);
+            Cache::forget(config('cache_entity.user.cache_keys.entity') . $model->uuid);
+        });
+        self::deleted(function ($model) {
+            Cache::forget(config('cache_entity.user.list'));
+            Cache::forget(config('cache_entity.user.cache_keys.entity') . $model->uuid);
         });
     }
 }

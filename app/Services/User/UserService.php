@@ -6,6 +6,7 @@ use App\DTOs\User\UserDTO;
 use App\Models\User;
 use App\Services\BaseService;
 use App\Services\User\Repository\UserRepositoryInterface;
+use App\Traits\EntityCacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
@@ -15,12 +16,17 @@ use Illuminate\Support\Facades\Hash;
  */
 class UserService extends BaseService
 {
+    use EntityCacheable;
+
+    protected bool $canEntityCache = false;
+
     /**
      * @param UserRepositoryInterface $baseRepository
      */
     public function __construct(UserRepositoryInterface $baseRepository)
     {
         $this->baseRepository = $baseRepository;
+        $this->canEntityCache = config('cache_entity.user.mode');
     }
 
     /**
@@ -66,8 +72,9 @@ class UserService extends BaseService
      */
     public function getUsers(): Collection
     {
-        // todo кеш
-        return $this->baseRepository->index()->with(['roles'])->get();
+        return $this->caching($this->canEntityCache, config('cache_entity.user.cache_keys.list'), function () {
+            return $this->baseRepository->index()->with(['roles'])->get();
+        });
     }
 
     /**
@@ -76,10 +83,16 @@ class UserService extends BaseService
      */
     public function getUserWithRoles(string $uuid): ?Model
     {
-        return $this->baseRepository->index()
-            ->with(['roles'])
-            ->where('uuid', $uuid)
-            ->first();
+        return $this->caching(
+            $this->canEntityCache,
+            config('cache_entity.user.cache_keys.entity'),
+            function () use ($uuid) {
+                $this->baseRepository->index()
+                    ->with(['roles'])
+                    ->where('uuid', $uuid)
+                    ->first();
+            }
+        );
     }
 
     private function syncRoles(User $user, ?Collection $roles): void

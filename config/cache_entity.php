@@ -1,14 +1,21 @@
 <?php
+
 /**
- *  Конфиг отвечает за нейминг ключей кеширования
+ *  Конфиг отвечает за кеширование сущностей
  */
 return [
     'role' => [
-        'list'   => 'role-list',
-        'entity' => 'role-', // role - $uuid
+        'mode'       => env('CACHE_ENTITY_ROLE', true),
+        'cache_keys' => [
+            'list'   => 'role-list',
+            'entity' => 'role-', // role - $uuid
+        ],
     ],
     'user' => [
-        'list'   => 'user-list',
-        'entity' => 'user-',
+        'mode'   => env('CACHE_ENTITY_USER', true),
+        'cache_keys' => [
+            'list'   => 'user-list',
+            'entity' => 'user-', // user - $uuid
+        ],
     ],
 ];

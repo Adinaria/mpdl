@@ -17,15 +17,17 @@ class Role extends SpatieRole
 
         self::creating(function ($model) {
             $model->uuid = Str::uuid();
-            Cache::forget(config('cache_entity.role.list'));
         });
-        self::updating(function ($model) {
-            Cache::forget(config('cache_entity.role.list'));
-            Cache::forget(config('cache_entity.role.entity') . $model->uuid);
+        self::created(function () {
+            Cache::forget(config('cache_entity.role.cache_keys.list'));
         });
-        self::deleting(function ($model) {
+        self::updated(function ($model) {
             Cache::forget(config('cache_entity.role.list'));
-            Cache::forget(config('cache_entity.role.entity') . $model->uuid);
+            Cache::forget(config('cache_entity.role.cache_keys.entity') . $model->uuid);
+        });
+        self::deleted(function ($model) {
+            Cache::forget(config('cache_entity.role.list'));
+            Cache::forget(config('cache_entity.role.cache_keys.entity') . $model->uuid);
         });
     }
 }
