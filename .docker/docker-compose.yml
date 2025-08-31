@@ -66,6 +66,29 @@ services:
         networks:
             - project-network
 
+
+    php-fpm-exporter:
+        image: prom/php-fpm-exporter
+        ports:
+            - "9253:9253"
+        environment:
+            SCRIPT: "/status?full"
+        networks:
+            - project-network
+        depends_on:
+            - app_test
+
+    nginx-exporter:
+        image: nginx/nginx-prometheus-exporter:latest
+        ports:
+            - "9113:9113"
+        environment:
+            NGINX_STATUS_URL: http://webserver_test/nginx_status
+        networks:
+            - project-network
+        depends_on:
+            - webserver_test
+
     adminer:
         image: adminer
         container_name: adminer_test
