@@ -9,6 +9,7 @@ use App\Services\User\Repository\UserRepositoryInterface;
 use App\Traits\EntityCacheable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -87,7 +88,7 @@ class UserService extends BaseService
             $this->canEntityCache,
             config('cache_entity.user.cache_keys.entity') . $uuid,
             function () use ($uuid) {
-               return $this->baseRepository->index()
+                return $this->baseRepository->index()
                     ->with(['roles'])
                     ->where('uuid', $uuid)
                     ->first();
@@ -102,6 +103,9 @@ class UserService extends BaseService
         }
 
         $user->syncRoles($roles->toArray());
+        
+        Cache::forget(config('cache_entity.user.cache_keys.entity') . $user->uuid);
+        Cache::forget(config('cache_entity.user.cache_keys.list'));
     }
 
 
