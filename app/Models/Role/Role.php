@@ -27,7 +27,9 @@ class Role extends SpatieRole
             }
         });
         self::created(function () {
-            Cache::forget(config('cache_entity.role.cache_keys.list'));
+            if (config('cache_entity.role.mode')) {
+                Cache::forget(config('cache_entity.role.cache_keys.list'));
+            }
         });
         self::updated(function ($model) {
             self::clearCacheByRole($model);
@@ -39,15 +41,17 @@ class Role extends SpatieRole
 
     private static function clearCacheByRole(self $model): void
     {
-        Cache::forget(config('cache_entity.role.cache_keys.list'));
-        Cache::forget(config('cache_entity.role.cache_keys.entity') . $model->uuid);
+        if (config('cache_entity.role.mode')) {
+            Cache::forget(config('cache_entity.role.cache_keys.list'));
+            Cache::forget(config('cache_entity.role.cache_keys.entity') . $model->uuid);
 
-        $users = $model->users()->get();
-        if ($users->isNotEmpty()) {
-            Cache::forget(config('cache_entity.user.cache_keys.list'));
-            $users->each(function ($user) {
-                Cache::forget(config('cache_entity.user.cache_keys.entity') . $user->uuid);
-            });
+            $users = $model->users()->get();
+            if ($users->isNotEmpty()) {
+                Cache::forget(config('cache_entity.user.cache_keys.list'));
+                $users->each(function ($user) {
+                    Cache::forget(config('cache_entity.user.cache_keys.entity') . $user->uuid);
+                });
+            }
         }
     }
 
