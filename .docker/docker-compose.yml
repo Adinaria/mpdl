@@ -68,11 +68,12 @@ services:
 
 
     php-fpm-exporter:
-        image: prom/php-fpm-exporter
+        image: hipages/php-fpm-exporter:latest # Используем новый, рабочий образ
         ports:
             - "9253:9253"
         environment:
-            SCRIPT: "/status?full"
+            # Путь к статусу вашего PHP-FPM
+            PHP_FPM_SCRAPE_URI: tcp://app:9000/status
         networks:
             - project-network
         depends_on:
