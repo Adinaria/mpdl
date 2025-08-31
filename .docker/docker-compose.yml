@@ -68,7 +68,7 @@ services:
 
 
     php-fpm-exporter:
-        image: bakins/php-fpm-exporter:latest # Используем новый, рабочий образ
+        image: hipages/php-fpm_exporter:latest
         ports:
             - "9253:9253"
         environment:
