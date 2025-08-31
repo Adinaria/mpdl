@@ -44,7 +44,7 @@ class RoleService extends BaseService
     {
         return $this->caching(
             $this->canEntityCache,
-            config('cache_entity.role.cache_keys.entity'),
+            config('cache_entity.role.cache_keys.entity') . $uuid,
             function () use ($uuid) {
                 return parent::getByUuid($uuid);
             }

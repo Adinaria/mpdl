@@ -85,7 +85,7 @@ class UserService extends BaseService
     {
         return $this->caching(
             $this->canEntityCache,
-            config('cache_entity.user.cache_keys.entity'),
+            config('cache_entity.user.cache_keys.entity') . $uuid,
             function () use ($uuid) {
                 $this->baseRepository->index()
                     ->with(['roles'])

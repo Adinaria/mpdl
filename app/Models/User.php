@@ -56,7 +56,6 @@ class User extends Authenticatable
 
         self::creating(function ($model) {
             $model->uuid = Str::uuid();
-            Cache::forget(config('cache_entity.user.cache_keys.list'));
         });
         self::created(function () {
             Cache::forget(config('cache_entity.user.cache_keys.list'));
@@ -71,7 +70,7 @@ class User extends Authenticatable
 
     private static function clearCacheByUser(self $model): void
     {
-        Cache::forget(config('cache_entity.user.list'));
+        Cache::forget(config('cache_entity.user.cache_keys.list'));
         Cache::forget(config('cache_entity.user.cache_keys.entity') . $model->uuid);
     }
 }
