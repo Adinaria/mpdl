@@ -26,7 +26,7 @@ services:
             - "8039:80"
             - "455:444"
         volumes:
-            - ../public:/var/public
+            - ../:/var/project
             - ../.docker/nginx/conf.d:/etc/nginx/conf.d/
         networks:
             - project-network
