@@ -72,8 +72,7 @@ services:
         ports:
             - "9253:9253"
         environment:
-            # Путь к статусу вашего PHP-FPM
-            PHP_FPM_SCRAPE_URI: tcp://app_test:9000/status
+            PHP_FPM_SCRAPE_URI: tcp://app:9000/status
         networks:
             - project-network
         depends_on:
