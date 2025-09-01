@@ -34,6 +34,8 @@ class AuthController extends APIV1Controller
      *
      * Creates a new user account and returns an authentication token.
      *
+     * @unauthenticated
+     *
      * @bodyParam name string required The user's first name. Example: John
      * @bodyParam last_name string required The user's last name. Example: Doe
      * @bodyParam email string required The user's email address. Example: john.doe@example.com
@@ -97,6 +99,8 @@ class AuthController extends APIV1Controller
      * Login user
      *
      * Authenticates a user with email and password, returns an authentication token.
+     *
+     * @unauthenticated
      *
      * @bodyParam email string required The user's email address. Example: john.doe@example.com
      * @bodyParam password string required The user's password. Example: password123
