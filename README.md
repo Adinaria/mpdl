@@ -10,6 +10,7 @@
 - **Spatie Permissions** система ролей
 - **Spatie Laravel data** Data transfer Objects (DTO)
 - **Unit тесты** (Pest)
+- **API документация** (Scribe)
 - **Docker** контейнеризация
 
 ---
@@ -54,6 +55,7 @@ docker exec -it app_test bash -c "chmod +x .docker/setup.sh && ./.docker/setup.s
 - ✅ Заполнение тестовыми данными
 - ✅ Создание символических ссылок
 - ✅ Настройку прав доступа
+- ✅ Создание API документации (Scribe)
 - ✅ Оптимизацию приложения (кеширование)
 
 ---
@@ -89,6 +91,7 @@ php artisan key:generate
 php artisan migrate
 php artisan db:seed
 php artisan storage:link
+php artisan scribe:generate
 
 # Права доступа
 chown -R www-data:www-data storage bootstrap/cache
@@ -181,6 +184,7 @@ tests/
 ✅ **CRUD для пользователей и ролей**  
 ✅ **Система разрешений (Spatie)**  
 ✅ **API ресурсы и валидация**  
+✅ **API документация**
 ✅ **Unit тесты**  
 ✅ **Docker контейнеризация**  
 ✅ **Кеширование сущностей**  
