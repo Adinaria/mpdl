@@ -15,7 +15,9 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 /**
+ * @group Role
  *
+ * API endpoints for managing user roles
  */
 class RoleController extends APIV1Controller
 {
@@ -27,6 +29,26 @@ class RoleController extends APIV1Controller
     }
 
     /**
+     * Get all roles
+     *
+     * Retrieves a list of all available roles in the system.
+     *
+     * @authenticated
+     *
+     * @response 200 [
+     *   {
+     *     "uuid": "550e8400-e29b-41d4-a716-446655440000",
+     *     "name": "administrator",
+     *   },
+     *   {
+     *     "uuid": "550e8400-e29b-41d4-a716-446655440001",
+     *     "name": "user",
+     *   }
+     * ]
+     *
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
      * @return AnonymousResourceCollection
      */
     public function index(): AnonymousResourceCollection
@@ -37,6 +59,32 @@ class RoleController extends APIV1Controller
     }
 
     /**
+     * Create a new role
+     *
+     * Creates a new role in the system.
+     *
+     * @authenticated
+     *
+     * @bodyParam name string required The role name. Must be unique. Example: manager
+     *
+     * @response 201 {
+     *   "data": {
+     *     "uuid": "550e8400-e29b-41d4-a716-446655440002",
+     *     "name": "manager",
+     *   },
+     *   "message": "Role created successfully"
+     * }
+     *
+     * @response 422 {
+     *   "message": "The given data was invalid.",
+     *   "errors": {
+     *     "name": ["The name field is required.", "The name has already been taken."]
+     *   }
+     * }
+     *
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
      * @param RoleCreateRequest $request
      * @return JsonResponse
      */
@@ -54,8 +102,26 @@ class RoleController extends APIV1Controller
     }
 
     /**
-     * @param string $uuid
-     * @return RoleResource|JsonResponse
+     * Get role by UUID
+     *
+     * Retrieves a specific role by its UUID.
+     *
+     * @authenticated
+     *
+     * @urlParam uuid string required The UUID of the role. Example: 550e8400-e29b-41d4-a716-446655440000
+     *
+     * @response 200 {
+     *   "uuid": "550e8400-e29b-41d4-a716-446655440000",
+     *   "name": "administrator",
+     * }
+     *
+     * @response 404 {
+     *   "message": "Role not found"
+     * }
+     *
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
      */
     public function show(string $uuid): RoleResource|JsonResponse
     {
@@ -69,6 +135,41 @@ class RoleController extends APIV1Controller
     }
 
     /**
+     * Update role
+     *
+     * Updates an existing role by UUID. Default roles cannot be updated.
+     *
+     * @authenticated
+     *
+     * @urlParam uuid string required The UUID of the role to update. Example: 550e8400-e29b-41d4-a716-446655440000
+     * @bodyParam name string required The new role name. Must be unique. Example: senior_manager
+     *
+     * @response 200 {
+     *   "data": {
+     *     "uuid": "550e8400-e29b-41d4-a716-446655440000",
+     *     "name": "senior_manager",
+     *   },
+     *   "message": "Role updated successfully"
+     * }
+     *
+     * @response 404 {
+     *   "message": "Role not found"
+     * }
+     *
+     * @response 409 {
+     *   "message": "Cannot update default role"
+     * }
+     *
+     * @response 422 {
+     *   "message": "The given data was invalid.",
+     *   "errors": {
+     *     "name": ["The name field is required.", "The name has already been taken."]
+     *   }
+     * }
+     *
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
      * @param RoleUpdateRequest $request
      * @param string $uuid
      * @return RoleResource|JsonResponse
@@ -101,6 +202,32 @@ class RoleController extends APIV1Controller
     }
 
     /**
+     * Delete role
+     *
+     * Deletes a role by UUID. Default roles and roles assigned to users cannot be deleted.
+     *
+     * @authenticated
+     *
+     * @urlParam uuid string required The UUID of the role to delete. Example: 550e8400-e29b-41d4-a716-446655440000
+     *
+     * @response 204 scenario="Role deleted successfully"
+     *
+     * @response 404 {
+     *   "message": "Role not found"
+     * }
+     *
+     * @response 409 {
+     *   "message": "Cannot delete default role"
+     * }
+     *
+     * @response 422 {
+     *   "message": "Cannot delete role that is assigned to users"
+     * }
+     *
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
+     *
      * @param string $uuid
      * @return JsonResponse|Response
      */
