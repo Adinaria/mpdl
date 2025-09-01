@@ -15,8 +15,6 @@ services:
             - project-network
         depends_on:
             - db
-        env_file:
-            - ../.env
 
     #Nginx Service
     webserver:
@@ -50,44 +48,6 @@ services:
             - ../.docker/mysql:/var/lib/mysql/
         networks:
             - project-network
-
-    prometheus:
-        image: prom/prometheus:latest
-        container_name: prometheus_test
-        ports:
-            - "9090:9090"
-        volumes:
-            - ./prometheus:/etc/prometheus
-        environment:
-            GRAFANA_USER: ${GRAFANA_USER}
-            GRAFANA_API_KEY: ${GRAFANA_API_KEY}
-        env_file:
-            - ../.env
-        networks:
-            - project-network
-
-
-    php-fpm-exporter:
-        image: hipages/php-fpm_exporter:latest
-        ports:
-            - "9253:9253"
-        environment:
-            PHP_FPM_SCRAPE_URI: tcp://app:9000/status
-        networks:
-            - project-network
-        depends_on:
-            - app
-
-    nginx-exporter:
-        image: nginx/nginx-prometheus-exporter:latest
-        ports:
-            - "9113:9113"
-        environment:
-            NGINX_STATUS_URL: http://webserver/nginx_status
-        networks:
-            - project-network
-        depends_on:
-            - webserver
 
     adminer:
         image: adminer
