@@ -1,4 +1,4 @@
-# Laravel API Project - Инструкция по установке
+# Laravel API Project - Инструкция
 
 > Laravel API для управления пользователями и ролями
 
