@@ -1,0 +1,513 @@
+name: Role
+description: |-
+
+  API endpoints for managing user roles
+endpoints:
+  -
+    httpMethods:
+      - GET
+    uri: api/v1/roles
+    metadata:
+      groupName: Role
+      groupDescription: |-
+
+        API endpoints for managing user roles
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get all roles'
+      description: 'Retrieves a list of all available roles in the system.'
+      authenticated: true
+      deprecated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          [
+            {
+              "uuid": "550e8400-e29b-41d4-a716-446655440000",
+              "name": "administrator",
+            },
+            {
+              "uuid": "550e8400-e29b-41d4-a716-446655440001",
+              "name": "user",
+            }
+          ]
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/v1/roles
+    metadata:
+      groupName: Role
+      groupDescription: |-
+
+        API endpoints for managing user roles
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Create a new role'
+      description: 'Creates a new role in the system.'
+      authenticated: true
+      deprecated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        name: name
+        description: 'The role name. Must be unique.'
+        required: true
+        example: manager
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      name: manager
+    fileParameters: []
+    responses:
+      -
+        status: 201
+        content: |-
+          {
+            "data": {
+              "uuid": "550e8400-e29b-41d4-a716-446655440002",
+              "name": "manager",
+            },
+            "message": "Role created successfully"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+            "message": "The given data was invalid.",
+            "errors": {
+              "name": ["The name field is required.", "The name has already been taken."]
+            }
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: 'api/v1/roles/{uuid}'
+    metadata:
+      groupName: Role
+      groupDescription: |-
+
+        API endpoints for managing user roles
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get role by UUID'
+      description: 'Retrieves a specific role by its UUID.'
+      authenticated: true
+      deprecated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      uuid:
+        name: uuid
+        description: 'The UUID of the role.'
+        required: true
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      uuid: 550e8400-e29b-41d4-a716-446655440000
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "uuid": "550e8400-e29b-41d4-a716-446655440000",
+            "name": "administrator",
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+            "message": "Role not found"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/roles/{uuid}'
+    metadata:
+      groupName: Role
+      groupDescription: |-
+
+        API endpoints for managing user roles
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Delete role'
+      description: 'Deletes a role by UUID. Default roles and roles assigned to users cannot be deleted.'
+      authenticated: true
+      deprecated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      uuid:
+        name: uuid
+        description: 'The UUID of the role to delete.'
+        required: true
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      uuid: 550e8400-e29b-41d4-a716-446655440000
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 204
+        content: ''
+        headers: []
+        description: 'Role deleted successfully'
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+            "message": "Role not found"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 409
+        content: |-
+          {
+            "message": "Cannot delete default role"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+            "message": "Cannot delete role that is assigned to users"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PUT
+    uri: 'api/v1/roles/{uuid}'
+    metadata:
+      groupName: Role
+      groupDescription: |-
+
+        API endpoints for managing user roles
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update role'
+      description: 'Updates an existing role by UUID. Default roles cannot be updated.'
+      authenticated: true
+      deprecated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      uuid:
+        name: uuid
+        description: 'The UUID of the role to update.'
+        required: true
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      uuid: 550e8400-e29b-41d4-a716-446655440000
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        name: name
+        description: 'The new role name. Must be unique.'
+        required: true
+        example: senior_manager
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      name: senior_manager
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "data": {
+              "uuid": "550e8400-e29b-41d4-a716-446655440000",
+              "name": "senior_manager",
+            },
+            "message": "Role updated successfully"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+            "message": "Role not found"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 409
+        content: |-
+          {
+            "message": "Cannot update default role"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+            "message": "The given data was invalid.",
+            "errors": {
+              "name": ["The name field is required.", "The name has already been taken."]
+            }
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PATCH
+    uri: 'api/v1/roles/{uuid}'
+    metadata:
+      groupName: Role
+      groupDescription: |-
+
+        API endpoints for managing user roles
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update role'
+      description: 'Updates an existing role by UUID. Default roles cannot be updated.'
+      authenticated: true
+      deprecated: false
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      uuid:
+        name: uuid
+        description: 'The UUID of the role to update.'
+        required: true
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      uuid: 550e8400-e29b-41d4-a716-446655440000
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        name: name
+        description: 'The new role name. Must be unique.'
+        required: true
+        example: senior_manager
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      name: senior_manager
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "data": {
+              "uuid": "550e8400-e29b-41d4-a716-446655440000",
+              "name": "senior_manager",
+            },
+            "message": "Role updated successfully"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+            "message": "Role not found"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 409
+        content: |-
+          {
+            "message": "Cannot update default role"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+            "message": "The given data was invalid.",
+            "errors": {
+              "name": ["The name field is required.", "The name has already been taken."]
+            }
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
