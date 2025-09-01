@@ -14,7 +14,9 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 /**
+ * @group User
  *
+ * API endpoints for managing users
  */
 class UserController extends APIV1Controller
 {
@@ -26,6 +28,41 @@ class UserController extends APIV1Controller
     }
 
     /**
+     * Get all users
+     *
+     * Retrieves a list of all users in the system with their roles.
+     *
+     * @authenticated
+     *
+     * @response 200 [
+     *   {
+     *     "uuid": "550e8400-e29b-41d4-a716-446655440000",
+     *     "name": "John",
+     *     "last_name": "Doe",
+     *     "email": "john.doe@example.com",
+     *     "roles": [
+     *       {
+     *         "name": "administrator"
+     *       }
+     *     ]
+     *   },
+     *   {
+     *     "uuid": "550e8400-e29b-41d4-a716-446655440001",
+     *     "name": "Jane",
+     *     "last_name": "Smith",
+     *     "email": "jane.smith@example.com",
+     *     "roles": [
+     *       {
+     *         "name": "user"
+     *       }
+     *     ]
+     *   }
+     * ]
+     *
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
+     *
      * @return AnonymousResourceCollection
      */
     public function index(): AnonymousResourceCollection
@@ -36,6 +73,46 @@ class UserController extends APIV1Controller
     }
 
     /**
+     * Create a new user
+     *
+     * Creates a new user in the system and assigns specified roles.
+     *
+     * @authenticated
+     *
+     * @bodyParam name string required The user's first name. Example: John
+     * @bodyParam last_name string required The user's last name. Example: Doe
+     * @bodyParam email string required The user's email address. Must be unique. Example: john.doe@example.com
+     * @bodyParam password string required The user's password. Must be at least 8 characters. Example: password123
+     * @bodyParam password_confirmation string required Password confirmation. Must match password. Example: password123
+     * @bodyParam roles string[] optional Array of role names to assign to the user. Example: ["administrator", "user"]
+     *
+     * @response 201 {
+     *   "data": {
+     *     "uuid": "550e8400-e29b-41d4-a716-446655440002",
+     *     "name": "John",
+     *     "last_name": "Doe",
+     *     "email": "john.doe@example.com",
+     *     "roles": [
+     *       {
+     *         "name": "administrator"
+     *       }
+     *     ]
+     *   },
+     *   "message": "User created successfully"
+     * }
+     *
+     * @response 422 {
+     *   "message": "The given data was invalid.",
+     *   "errors": {
+     *     "email": ["The email has already been taken."],
+     *     "password": ["The password must be at least 8 characters."],
+     *     "roles": ["The selected roles is invalid."]
+     *   }
+     * }
+     *
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
      * @param UserCreateRequest $request
      * @return JsonResponse
      */
@@ -59,6 +136,37 @@ class UserController extends APIV1Controller
     }
 
     /**
+     * Get user by UUID
+     *
+     * Retrieves a specific user by UUID with their assigned roles.
+     *
+     * @authenticated
+     *
+     * @urlParam uuid string required The UUID of the user. Example: 550e8400-e29b-41d4-a716-446655440000
+     *
+     * @response 200 {
+     *   "uuid": "550e8400-e29b-41d4-a716-446655440000",
+     *   "name": "John",
+     *   "last_name": "Doe",
+     *   "email": "john.doe@example.com",
+     *   "roles": [
+     *     {
+     *       "name": "administrator"
+     *     },
+     *     {
+     *       "name": "user"
+     *     }
+     *   ]
+     * }
+     *
+     * @response 404 {
+     *   "message": "User not found"
+     * }
+     *
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
+     *
      * @param string $uuid
      * @return UserResource|JsonResponse
      */
@@ -73,6 +181,49 @@ class UserController extends APIV1Controller
     }
 
     /**
+     * Update user (PUT)
+     *
+     * Completely updates a user's information and roles. All fields are required.
+     *
+     * @authenticated
+     *
+     * @urlParam uuid string required The UUID of the user to update. Example: 550e8400-e29b-41d4-a716-446655440000
+     * @bodyParam name string required The user's first name. Example: John
+     * @bodyParam last_name string required The user's last name. Example: Doe
+     * @bodyParam email string required The user's email address. Must be unique. Example: john.doe@example.com
+     * @bodyParam password string required The user's password. Must be at least 8 characters. Example: password123
+     * @bodyParam password_confirmation string required Password confirmation. Must match password. Example: password123
+     * @bodyParam roles string[] optional Array of role names to assign to the user. Example: ["administrator"]
+     *
+     * @response 200 {
+     *   "uuid": "550e8400-e29b-41d4-a716-446655440000",
+     *   "name": "John",
+     *   "last_name": "Doe",
+     *   "email": "john.doe@example.com",
+     *   "roles": [
+     *     {
+     *       "name": "administrator"
+     *     }
+     *   ]
+     * }
+     *
+     * @response 404 {
+     *   "message": "User not found"
+     * }
+     *
+     * @response 422 {
+     *   "message": "The given data was invalid.",
+     *   "errors": {
+     *     "email": ["The email has already been taken."],
+     *     "password": ["The password must be at least 8 characters."],
+     *     "roles": ["The selected roles is invalid."]
+     *   }
+     * }
+     *
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
+     *
      * @param UserUpdateRequest $request
      * @param string $uuid
      * @return UserResource|JsonResponse
@@ -100,6 +251,49 @@ class UserController extends APIV1Controller
     }
 
     /**
+     * Update user (PATCH)
+     *
+     * Partially updates a user's information and/or roles. Only provided fields will be updated.
+     *
+     * @authenticated
+     *
+     * @urlParam uuid string required The UUID of the user to update. Example: 550e8400-e29b-41d4-a716-446655440000
+     * @bodyParam name string optional The user's first name. Example: John
+     * @bodyParam last_name string optional The user's last name. Example: Doe
+     * @bodyParam email string optional The user's email address. Must be unique. Example: john.doe@example.com
+     * @bodyParam password string optional The user's password. Must be at least 8 characters. Example: password123
+     * @bodyParam password_confirmation string optional Password confirmation. Must match password if password is provided. Example: password123
+     * @bodyParam roles string[] optional Array of role names to assign to the user. Example: ["user"]
+     *
+     * @response 200 {
+     *   "uuid": "550e8400-e29b-41d4-a716-446655440000",
+     *   "name": "John",
+     *   "last_name": "Doe",
+     *   "email": "john.doe@example.com",
+     *   "roles": [
+     *     {
+     *       "name": "user"
+     *     }
+     *   ]
+     * }
+     *
+     * @response 404 {
+     *   "message": "User not found"
+     * }
+     *
+     * @response 422 {
+     *   "message": "The given data was invalid.",
+     *   "errors": {
+     *     "email": ["The email has already been taken."],
+     *     "password": ["The password must be at least 8 characters."],
+     *     "roles": ["The selected roles is invalid."]
+     *   }
+     * }
+     *
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
+     *
      * @param UserUpdateRequest $request
      * @param string $uuid
      * @return UserResource|JsonResponse
@@ -135,6 +329,24 @@ class UserController extends APIV1Controller
 
 
     /**
+     * Delete user
+     *
+     * Deletes a user from the system.
+     *
+     * @authenticated
+     *
+     * @urlParam uuid string required The UUID of the user to delete. Example: 550e8400-e29b-41d4-a716-446655440000
+     *
+     * @response 204 scenario="User deleted successfully"
+     *
+     * @response 404 {
+     *   "message": "User not found"
+     * }
+     *
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
+     *
      * @param string $uuid
      * @return Response|JsonResponse
      */
